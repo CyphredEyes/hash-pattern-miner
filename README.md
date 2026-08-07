@@ -17,7 +17,7 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
 ### Raw bytes
 
-  As it name says, search is performed on the raw binary output of the hash.
+  Search is performed on the raw binary output of the hash.
   This is the most low-level representation and usually not human-readable, but it represents the true entropy of the hash.
 
 ---
@@ -77,7 +77,7 @@ Here is some research i have done with "GitHub"
 | 12,413,501,635 | `VTP9jGitHub0OtVdPvrki1rv7I1mmewb2fHlKl0y9j0=` |
 | 12,560,796,672 | `T+rKxN/uP8utF+CAg1c6SDODggMnHYCIwvnGitHubUk=` |
 
-The gaps varied from 0.03B to 4.65B, showing the natural variance of the process. But, the practical average, 1.52 billion, is close to the theoretical value of 1.76 billion, and the more hashes we "mine", the closer we gonna get to 1.76 billion!
+The gaps varied from 0.03B to 4.65B, showing the natural variance of the process. But, the practical average, 1.52 billion, is close to the theoretical value of 1.76 billion, and the more hashes we "mine", the closer we'll get to 1.76 billion!
 
 **Just a quick tip: Don't try this in Python, it's painfully slow. I used Rust instead, it's amazing**
 
