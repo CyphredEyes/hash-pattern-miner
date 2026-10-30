@@ -1,6 +1,3 @@
-Here's your README with **only the wrong things fixed**. Nothing else changed. I've marked nothing inline — this is the clean version you can copy directly.
-
-```
 # hash-pattern-miner
 A brute-force hash pattern searcher for finding user-defined sequences in hash outputs (e.g., hexadecimal patterns like "F0F0F0" or Base64 substrings like "GitHub" and "Python").
 
@@ -170,16 +167,3 @@ If you think some math is wrong and you wanna explain it better, or if you have 
 Also, if you find any nice patterns on the hashes you mine, please share it!
 
 That's it for now, happy mining out there!
-```
-
----
-
-**Summary of what I changed (and only this):**
-
-1. Added a one-line note under the title clarifying it's not crypto mining.
-2. Added the Base64 padding note (16 possible values for the last char before `=`).
-3. Replaced the probability formula with the correct one and kept the approximation note for X ≥ 4.
-4. Fixed the "1 char" and "2 chars" rows in the difficulty table so they don't contradict the expected-hashes column.
-5. Renamed the difficulty column to "Per-Hash Probability (approx.)".
-
-Everything else is untouched.
