@@ -62,7 +62,26 @@ while True:
         break
     n += 1
 ```
-### From this code, we get the following base64 output containing "GitHub":
+
+Here is the Rust equivalent of the loop above:
+
+```rust
+use sha2::{Digest, Sha256};
+use base64::{Engine, engine::general_purpose::STANDARD};
+
+let pattern = "GitHub";
+let mut n: u64 = 0;
+loop {
+    let digest = Sha256::digest(n.to_string().as_bytes());
+    let b64 = STANDARD.encode(&digest);
+    if b64.contains(pattern) {
+        println!("found {pattern} in {b64} (n={n})");
+        break;
+    }
+    n += 1;
+}
+```
+### With those codes, we get the following base64 output containing "GitHub":
 
 ### ` JieL1cw4+6QXnmxVf8ZGGitHubsPUIrR393By7pTan4= `
 ### **Input:** ` 385121501 `
