@@ -1,7 +1,7 @@
 # hash-pattern-miner
 A brute-force hash pattern searcher for finding user-defined sequences in hash outputs (e.g., hexadecimal patterns like "F0F0F0" or Base64 substrings like "GitHub" and "Python").
 
-> Note: despite the name, this is not cryptocurrency mining — it's a brute-force string-pattern search over hash outputs.
+> Note: This is not cryptocurrency mining — it's a brute-force string-pattern search over hash outputs.
 
 ## Searching Methods:
 
@@ -17,12 +17,33 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
 ---
 
-### Raw bytes
+## Quick start
 
-  Search is performed on the raw binary output of the hash.
-  This is the most low-level representation and usually not human-readable, but it represents the true entropy of the hash.
+```bash
+# Build (requires Rust 1.75+)
+cargo build --release
+
+# Find "GitHub" in base64-encoded SHA-256 outputs
+./target/release/hash-pattern-miner GitHub --count 1
+
+# Find "5feceb" in hex-encoded SHA-256 outputs
+./target/release/hash-pattern-miner 5feceb --mode hex --count 1
+
+# Run forever, Ctrl+C to stop, append matches to CSV
+./target/release/hash-pattern-miner Python --csv matches.csv
+```
+
+Matches print to stdout with the pattern highlighted, and (optionally) are appended to a CSV:
+
+```csv
+input,raw_hash,encoded_hash
+385121501,26278bd5cc38fba4179e6c557fc6461a2b47babbbf508ad1dfddc1cbba536a7e,JieL1cw4+6QXnmxVf8ZGGitHubsPUIrR393By7pTan4=
+```
+
+Multithreaded with [rayon](https://github.com/rayon-rs/rayon), SHA-NI accelerated via [sha2](https://github.com/RustCrypto/hashes), zero allocations in the hot loop. Typical throughput: **200–600 MH/s** on a modern CPU.
 
 ---
+
 
 ## A simple demonstration of the idea, searching for "GitHub" inside the base64-encoded sha256 hash:
 
@@ -46,7 +67,7 @@ while True:
 ### ` JieL1cw4+6QXnmxVf8ZGGitHubsPUIrR393By7pTan4= `
 ### **Input:** ` 385121501 `
 
-Approximately 385 millions of iterations to get the first "GitHub"
+Approximately 385 millions of hashes to get the first "GitHub"
 
 **Note that, the more characters your target string has, the harder it will be to find it**
 
@@ -158,8 +179,7 @@ average gap: 32.6M
 
 ---
 
-I'm still working on this project. For the next updates, I want to finish the
-Rust version with cool charts, CLI, and yes — I'll make it cluster-ready!
+I'm still working on this project.
 
 I think all experimental results align with the mathematical model, but since I'm not so good at math, I still have some questions about it. Feel free to help me out!
 If you think some math is wrong and you wanna explain it better, or if you have your own version of the hash miner, you're welcome!
