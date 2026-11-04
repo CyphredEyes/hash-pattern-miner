@@ -9,8 +9,6 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
   Search is performed on Base64-encoded hash outputs. This method is interesting because the alphabet allows partial word formation, making patterns like "GitHub" or "Python" possible.
 
----
-
 ### Hexadecimal
 
   Search is performed directly on the raw hexadecimal representation of the hash output, it lacks readable structure compared to Base64.
@@ -33,12 +31,7 @@ cargo build --release
 ./target/release/hash-pattern-miner Python --csv matches.csv
 ```
 
-Matches print to stdout with the pattern highlighted, and (optionally) are appended to a CSV:
-
-```csv
-input,raw_hash,encoded_hash
-385121501,26278bd5cc38fba4179e6c557fc6461a2b47babbbf508ad1dfddc1cbba536a7e,JieL1cw4+6QXnmxVf8ZGGitHubsPUIrR393By7pTan4=
-```
+Matches print to stdout with the pattern highlighted
 
 Multithreaded with [rayon](https://github.com/rayon-rs/rayon), SHA-NI accelerated via [sha2](https://github.com/RustCrypto/hashes), zero allocations in the hot loop. Typical throughput: **200–600 MH/s** on a modern CPU.
 
@@ -86,7 +79,7 @@ loop {
 ### ` JieL1cw4+6QXnmxVf8ZGGitHubsPUIrR393By7pTan4= `
 ### **Input:** ` 385121501 `
 
-Approximately 385 millions of hashes to get the first "GitHub"
+approximately 385 million hashes to get the first "GitHub"
 
 **Note that, the more characters your target string has, the harder it will be to find it**
 
@@ -123,9 +116,7 @@ Here is some research i have done with "GitHub"
 | 12,413,501,635 | `VTP9jGitHub0OtVdPvrki1rv7I1mmewb2fHlKl0y9j0=` |
 | 12,560,796,672 | `T+rKxN/uP8utF+CAg1c6SDODggMnHYCIwvnGitHubUk=` |
 
-The gaps varied from 0.03B to 4.65B, showing the natural variance of the process. But, the practical average, 1.52 billion, is close to the theoretical value of 1.76 billion, and the more hashes we "mine", the closer we'll get to 1.76 billion!
-
-**Just a quick tip: Don't try this in Python, it's painfully slow. I used Rust instead, it's amazing**
+The gaps between consecutive matches varied from ~35M to ~4.65B, but the practical average of the 8 inter-match gaps of 1.52 billion is close to the theoretical value of 1.76 billion...
 
 ---
 
