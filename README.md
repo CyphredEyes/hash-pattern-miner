@@ -34,6 +34,7 @@ Options:
   -h, --help               Print help
 
 </summary>
+</details>
 
 ```bash
 # Build (requires Rust 1.75+)
