@@ -17,8 +17,8 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
 ## Quick start
 
-<details><summary> USAGE </summary>
-
+<details><summary> Commands usage </summary>
+```bash
 Usage: hash-pattern-miner [OPTIONS] <PATTERN>
 
 Arguments:
@@ -34,6 +34,7 @@ Options:
   -h, --help               Print help
 
 </details>
+```
 
 ```bash
 # Build (requires Rust 1.75+)
