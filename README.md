@@ -104,12 +104,30 @@ Note: the final Base64 character before the `=` padding has only 16 possible val
 A Base64-encoded SHA-256 hash is 44 characters long. For a pattern of length X, the positions available are **44 - X + 1**.
 So, for a 6 character pattern like "GitHub": 44 - 6 + 1 = 39 possible positions, each hash gives us 39 possible positions where the pattern could appear.
 
-The probability per hash is **P = 1 - (1 - 1/64^X)^(44 - X + 1)**.
-For larger patterns (X ≥ 4), overlap probability is negligible, so the approximation **P ≈ (44 - X + 1) / 64^X** is very close.
-For a 6 character pattern like "GitHub": P ≈ 39 / 64⁶ ≈ 5.67 × 10⁻¹⁰, so each hash has a **~0.0000000567%** chance of containing the pattern and the average number of hashes to find a match is 64⁶ / 39 ≈ 1.76 billion.
+The probability per hash is
 
 $$
 P = 1 - \left(1 - \frac{1}{64^X}\right)^{44-X+1}
+$$
+
+For larger patterns (X ≥ 4), overlap probability is negligible, so the approximation
+
+$$
+P \approx \frac{44 - X + 1}{64^X}
+$$
+
+is very close.
+
+For a 6 character pattern like "GitHub":
+
+$$
+P \approx \frac{39}{64^6} \approx 5.67 \times 10^{-10}
+$$
+
+so each hash has a **~0.0000000567%** chance of containing the pattern and the average number of hashes to find a match is
+
+$$
+\frac{64^6}{39} \approx 1.76 \text{ billion}
 $$
 
 ---
