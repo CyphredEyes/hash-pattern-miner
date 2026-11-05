@@ -17,26 +17,30 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
 ## Quick start
 
-<details><summary> Commands usage </summary>
 ```bash
-Usage: hash-pattern-miner [OPTIONS] <PATTERN>
-
-Arguments:
-  <PATTERN>  Pattern to search for (substring of the encoded hash)
-
-Options:
-  -m, --mode <MODE>        Encoding mode [default: base64] [possible values: base64, hex]
-  -t, --threads <THREADS>  Number of threads (0 = auto = logical cores) [default: 0]
-      --start <START>      Start value of n [default: 0]
-  -c, --count <COUNT>      Stop after N matches (0 = infinite, Ctrl+C to stop) [default: 0]
-      --csv <FILE>         Append matches to this CSV file (input,raw_hash,encoded_hash)
-      --no-color           Disable ANSI colors in match output
-  -h, --help               Print help
-
-</details>
+<details><summary> Commands usage </summary>
+  
+  Usage: hash-pattern-miner [OPTIONS] <PATTERN>
+  
+  Arguments:
+    <PATTERN>  Pattern to search for (substring of the encoded hash)
+  
+  Options:
+    -m, --mode <MODE>        Encoding mode [default: base64] [possible values: base64, hex]
+    -t, --threads <THREADS>  Number of threads (0 = auto = logical cores) [default: 0]
+        --start <START>      Start value of n [default: 0]
+    -c, --count <COUNT>      Stop after N matches (0 = infinite, Ctrl+C to stop) [default: 0]
+        --csv <FILE>         Append matches to this CSV file (input,raw_hash,encoded_hash)
+        --no-color           Disable ANSI colors in match output
+    -h, --help               Print help
+  
+  </details>
 ```
 
 ```bash
+
+
+
 # Build (requires Rust 1.75+)
 cargo build --release
 
