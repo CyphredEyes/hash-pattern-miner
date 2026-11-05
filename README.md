@@ -132,6 +132,106 @@ $$
 
 ---
 
+### The math behind
+
+SHA-256 produces a 32-byte (256-bit) digest. In Base64, that becomes a 44-character string:
+
+- **Positions 0–41** (42 chars): full 64-symbol alphabet (`A–Z`, `a–z`, `0–9`, `+`, `/`)
+- **Position 42** (1 char): only **16 possible values** — the final 4 data bits of the digest are zero-padded to 6 bits, so only even-indexed alphabet entries can appear
+- **Position 43** (1 char): always `=`
+
+#### Simple approximation
+
+For a pattern of length **X** using only alphabet characters, the number of possible windows (start positions) is `44 − X + 1`. For X ≥ 4, overlapping matches are negligible, so:
+
+$$
+P \approx \frac{44 - X + 1}{64^X}
+$$
+
+For "GitHub" (X = 6): `P ≈ 39 / 64⁶ ≈ 5.67 × 10⁻¹⁰`, so each hash has a **~0.0000000567%** chance of containing the pattern, and the expected number of hashes is:
+
+$$
+\frac{64^6}{39} \approx 1.76 \text{ billion}
+$$
+
+#### Boundary correction (precise)
+
+The above treats every window as if it had 64^X combinations. In reality:
+
+- Windows ending at position 41 or earlier: full **64^X** combinations
+- Window ending at position 42: **64^(X−1) × 16** if the pattern's last character is in `{A E I M Q U Y c g k o s w 0 4 8}`, otherwise **0**
+- Window ending at position 43: only matches if the pattern ends in `=` (rare)
+
+So for typical patterns (no `=` at the end), the **effective position count** is:
+
+$$
+\text{effective} =
+\begin{cases}
+44 - X - 1 & \text{if last char} \notin \{A,E,I,M,Q,U,Y,c,g,k,o,s,w,0,4,8\} \\
+44 - X - 1 + 4 & \text{if last char} \in \{A,E,I,M,Q,U,Y,c,g,k,o,s,w,0,4,8\}
+\end{cases}
+$$
+
+For "GitHub" (ends in `b`, not in the set): effective = **37**, so the precise expected hashes is `64⁶ / 37 ≈ 1.86 billion`. The ~5% gap from the simplified value is well within natural variance.
+
+---
+
+### Template: calculate your own
+
+**Given:**
+
+- `B` — digest size in bytes (`SHA-256 = 32`, `SHA-512 = 64`, `SHA-1 = 20`, `MD5 = 16`)
+- `X` — pattern length in characters
+- `A` — alphabet size at a given position (`16` for hex, `64` for Base64 body)
+- `L` — encoded length in characters
+
+**Length of encoded hash:**
+
+| Encoding | Formula | SHA-256 | SHA-512 | SHA-1 | MD5 |
+|---|---|---|---|---|---|
+| Hex | `L = 2·B` | 64 | 128 | 40 | 32 |
+| Base64 | `L = 4·⌈B/3⌉` | 44 | 88 | 28 | 24 |
+
+**Approximate expected hashes** (X ≥ 4):
+
+$$
+\text{expected} \approx \frac{A^X}{L - X + 1}
+$$
+
+**Precise expected hashes (Base64 only)** — replace the denominator per the boundary correction above.
+
+**Cheat sheet:**
+
+| Hash | Encoding | L | Alphabet A | Approx. positions | Expected hashes |
+|---|---|---|---|---|---|
+| SHA-256 | Hex | 64 | 16 | `65 − X` | `16^X / (65 − X)` |
+| SHA-256 | Base64 | 44 | 64 | `45 − X` | `64^X / (45 − X)` |
+| SHA-512 | Hex | 128 | 16 | `129 − X` | `16^X / (129 − X)` |
+| SHA-512 | Base64 | 88 | 64 | `89 − X` | `64^X / (89 − X)` |
+| SHA-1 | Hex | 40 | 16 | `41 − X` | `16^X / (41 − X)` |
+| SHA-1 | Base64 | 28 | 64 | `29 − X` | `64^X / (29 − X)` |
+| MD5 | Hex | 32 | 16 | `33 − X` | `16^X / (33 − X)` |
+| MD5 | Base64 | 24 | 64 | `25 − X` | `64^X / (25 − X)` |
+
+**Worked examples:**
+
+| Pattern | Hash | Encoding | X | Positions (approx) | Expected hashes |
+|---|---|---|---|---|---|
+| GitHub | SHA-256 | Base64 | 6 | 39 (precise: 37) | 1.76B (precise: 1.86B) |
+| 5feceb | SHA-256 | Hex | 6 | 59 | `16⁶ / 59 ≈ 284,000` |
+| f0f0 | SHA-256 | Hex | 4 | 61 | `16⁴ / 61 ≈ 1,073` |
+| Rust | SHA-256 | Base64 | 4 | 41 | `64⁴ / 41 ≈ 409,600` |
+| 1337 | MD5 | Hex | 4 | 29 | `16⁴ / 29 ≈ 2,257` |
+
+**Legend:**
+
+- `B` — hash digest length in bytes
+- `L` — encoded hash length in characters
+- `X` — pattern length in characters
+- `A` — alphabet size at a given position
+- `P` — probability per hash of containing the pattern
+- Expected hashes = `1 / P`
+
 #### Practical results
 
 Here is some research i have done with "GitHub"
