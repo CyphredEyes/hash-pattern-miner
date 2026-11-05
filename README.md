@@ -60,24 +60,6 @@ Multithreaded with [rayon](https://github.com/rayon-rs/rayon), SHA-NI accelerate
 
 
 ### A simple demonstration of the idea, searching for "GitHub" inside the base64-encoded sha256 hash:
-In python:
-```python
-import hashlib, base64
-
-n = 0
-pattern = "GitHub"
-
-while True:
-    raw_hash = hashlib.sha256(str(n).encode()).digest()
-    b64_hash = base64.b64encode(raw_hash).decode()
-
-    if pattern in b64_hash:
-        print(f"found {pattern} in {b64_hash}")
-        break
-    n += 1
-```
-
-Here is the Rust equivalent of the loop above:
 
 ```rust
 use sha2::{Digest, Sha256};
@@ -95,14 +77,21 @@ loop {
     n += 1;
 }
 ```
-### With those codes, we get the following base64 output containing "GitHub":
+### Example output
 
-### ` JieL1cw4+6QXnmxVf8ZGGitHubsPUIrR393By7pTan4= `
-### **Input:** ` 385121501 `
+For `n = 385121501`, we compute `SHA-256(str(n))` — which produces a raw 32-byte digest — and then Base64-encode **those raw bytes** directly:
 
-approximately 385 million hashes to get the first "GitHub"
+```
+n           = 385121501
+raw digest  = 26278bd5cc38fba4179e6c557fc6461a2b47babbbf508ad1dfddc1cbba536a7e
+Base64(raw) = JieL1cw4+6QXnmxVf8ZGGitHubsPUIrR393By7pTan4=
+```
 
-**Note that, the more characters your target string has, the harder it will be to find it**
+The `raw digest` line is just a human-readable hex display of the bytes for convenience — the Base64 encoder receives the **32 actual bytes**, not this hex string. Encoding the hex string would produce a different (and longer) result.
+
+Approximately 385 million hashes to get the first "GitHub"
+
+**Note that the more characters your target string has, the harder it will be to find it**
 
 ---
 
