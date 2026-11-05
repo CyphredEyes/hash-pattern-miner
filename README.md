@@ -136,46 +136,62 @@ $$
 
 SHA-256 produces a 32-byte digest. Base64-encoded, that's a 44-character string over the 64-symbol alphabet (`A–Z`, `a–z`, `0–9`, `+`, `/`).
 
-A Base64-encoded SHA-256 hash is 44 characters long. For a pattern of length **X** using only alphabet characters, the number of start positions is **44 − X + 1**.
+**Why the last character is restricted.** Base64 encodes 3 bytes → 4 chars of 6 bits each. SHA-256's 32 bytes = 30 full + 2 leftover, so the last 2 bytes (16 bits) become 3 chars with 2 padding zeros:
 
-The probability per hash is:
+last 2 bytes: [d15..d8] [d7..d0]
+as 3 chars: [d15..d10] [d9..d4] [d3..d0 00]
+↑ 4 real bits + 2 padding
+text
 
-P = 1 − (1 − 1/64^X)^(44 − X + 1)
 
-For X ≥ 4, overlap is negligible, so:
+The last data character (position 42) therefore has only **16 possible values** — the alphabet indices `0, 4, 8, …, 60`, i.e. `A E I M Q U Y c g k o s w 0 4 8`. Position 43 is always `=`. SHA-512 is analogous: 64 bytes = 63 full + 1 leftover, so its last data char (position 85) has only **4 values** (`A Q g w`), and positions 86–87 are `==`.
 
-P ≈ (44 − X + 1) / 64^X
+**Effective position count.** For a pattern of length $X$ whose last character is $c$:
 
-For "GitHub" (X = 6): P ≈ 39 / 64⁶ ≈ 5.67 × 10⁻¹⁰ → expected hashes **64⁶ / 39 ≈ 1.76 billion**.
+$$
+\text{effective} = (L_d - X) + \begin{cases} 0.25 & \text{SHA-256 and } c \in \{A,E,I,M,Q,U,Y,c,g,k,o,s,w,0,4,8\} \\ 0.0625 & \text{SHA-512 and } c \in \{A,Q,g,w\} \\ 0 & \text{otherwise} \end{cases}
+$$
 
-**Boundary correction.** The last data character (position 42) has only **16 possible values**, not 64 — the final 4 bits of the digest are zero-padded to 6 bits, so only even-indexed alphabet entries can appear. Position 43 is always `=`. As a result:
+where $L_d$ is the number of data characters (43 for SHA-256, 86 for SHA-512, 27 for SHA-1, 22 for MD5). The first term counts windows fully inside the 64-symbol body; the second is the $16/64$ or $4/64$ weight of the single window ending at the restricted position (it contributes 0 when the pattern's last char can never land there).
 
-- The window ending at position 42 has `64^(X−1) × 16` combinations instead of `64^X`
-- The window ending at position 43 only matches if the pattern ends in `=`
+**Expected hashes:**
 
-For "GitHub" (no `=`), the effective position count is **37.25** instead of 39, so the corrected expected hashes is **64⁶ / 37.25 ≈ 1.84 billion**. The simplified (1.76B) and corrected (1.84B) values differ by ~4% — well within the natural variance (8 samples give a standard error of ~0.6B, so the observed 1.52B in the practical results is consistent with either).
+$$
+P = \frac{\text{effective}}{64^X}, \qquad \text{expected} = \frac{1}{P} = \frac{64^X}{\text{effective}}
+$$
 
----
+For "GitHub" ($X = 6$, last char `b` at index 27 — not a multiple of 4): effective $= 43 - 6 = 37$, so
 
-#### Template for other hashes and encodings
+$$
+\text{expected} = \frac{64^6}{37} \approx 1.86 \text{ billion}
+$$
 
-For any hash function and encoding, only `L` (encoded length) and `A` (alphabet size) matter:
+For SHA-512, effective $= 86 - 6 = 80$, giving $64^6 / 80 \approx 859$ million.
 
-| Hash | Hex L / A | Base64 L / A |
-|---|---|---|
-| MD5 | 32 / 16 | 24 / 64 |
-| SHA-1 | 40 / 16 | 28 / 64 |
-| SHA-256 | 64 / 16 | 44 / 64 |
-| SHA-512 | 128 / 16 | 88 / 64 |
+The 1.52B observed average in the practical results is within one standard error of 1.86B — with 9 samples, $\sigma_{\bar{x}} = \mu/\sqrt{9} \approx 0.62$B.
 
-**Expected hashes = A^X / (L − X + 1)** (for X ≥ 4, alphabet characters only)
+**Hex (uniform, no padding):**
 
-| Pattern | Hash | Encoding | Expected hashes |
-|---|---|---|---|
-| GitHub | SHA-256 | Base64 | 64⁶ / 39 ≈ 1.76B |
-| 5feceb | SHA-256 | Hex | 16⁶ / 59 ≈ 284,000 |
-| f0f0 | SHA-256 | Hex | 16⁴ / 61 ≈ 1,073 |
-| Rust | SHA-256 | Base64 | 64⁴ / 41 ≈ 409,600 |
+$$
+\text{expected} = \frac{16^X}{2B - X + 1}
+$$
+
+where $B$ is the digest size in bytes.
+
+**Cheat sheet** — 6-char pattern whose last char is not in the restricted set:
+
+| Hash | Encoding | $L$ | $L_d$ | Effective | Expected |
+|---|---|---|---|---|---|
+| MD5 | Base64 | 24 | 22 | 16 | $64^6/16 \approx 4.29\text{B}$ |
+| SHA-1 | Base64 | 28 | 27 | 21 | $64^6/21 \approx 3.27\text{B}$ |
+| SHA-256 | Base64 | 44 | 43 | 37 | $64^6/37 \approx 1.86\text{B}$ |
+| SHA-512 | Base64 | 88 | 86 | 80 | $64^6/80 \approx 859\text{M}$ |
+| MD5 | Hex | 32 | 32 | 27 | $16^6/27 \approx 621\text{k}$ |
+| SHA-1 | Hex | 40 | 40 | 35 | $16^6/35 \approx 479\text{k}$ |
+| SHA-256 | Hex | 64 | 64 | 59 | $16^6/59 \approx 284\text{k}$ |
+| SHA-512 | Hex | 128 | 128 | 123 | $16^6/123 \approx 136\text{k}$ |
+
+Patterns ending in `=` are a special case: the `=` must align with the padding position, so the pattern can only match at one fixed offset. They're rare in practice and not covered by the table above.
 
 #### Practical results
 
