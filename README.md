@@ -17,7 +17,7 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
 ### Quick start
 
-```bash
+```txt
 Usage: hash-pattern-miner [OPTIONS] <PATTERN>
   
   Arguments:
