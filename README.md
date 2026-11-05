@@ -3,7 +3,7 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
 > Note: This is not cryptocurrency mining — it's a brute-force string-pattern search over hash outputs.
 
-## Searching Methods:
+### Searching Methods:
 
 ### Base64 (This was the first method I explored, and the one I had the most fun with, because it can form human readable strings)
 
@@ -15,7 +15,7 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
 ---
 
-## Quick start
+### Quick start
 
 ```bash
 <details><summary> Commands usage </summary>
