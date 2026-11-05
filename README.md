@@ -108,6 +108,8 @@ The probability per hash is **P = 1 - (1 - 1/64^X)^(44 - X + 1)**.
 For larger patterns (X ≥ 4), overlap probability is negligible, so the approximation **P ≈ (44 - X + 1) / 64^X** is very close.
 For a 6 character pattern like "GitHub": P ≈ 39 / 64⁶ ≈ 5.67 × 10⁻¹⁰, so each hash has a **~0.0000000567%** chance of containing the pattern and the average number of hashes to find a match is 64⁶ / 39 ≈ 1.76 billion.
 
+P = 1 - \left(1 - \frac{1}{64^X}\right)^{44-X+1}
+
 ---
 
 #### Practical results
