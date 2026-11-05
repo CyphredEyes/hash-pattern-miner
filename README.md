@@ -17,6 +17,24 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
 ## Quick start
 
+<details><summary>
+
+Usage: hash-pattern-miner [OPTIONS] <PATTERN>
+
+Arguments:
+  <PATTERN>  Pattern to search for (substring of the encoded hash)
+
+Options:
+  -m, --mode <MODE>        Encoding mode [default: base64] [possible values: base64, hex]
+  -t, --threads <THREADS>  Number of threads (0 = auto = logical cores) [default: 0]
+      --start <START>      Start value of n [default: 0]
+  -c, --count <COUNT>      Stop after N matches (0 = infinite, Ctrl+C to stop) [default: 0]
+      --csv <FILE>         Append matches to this CSV file (input,raw_hash,encoded_hash)
+      --no-color           Disable ANSI colors in match output
+  -h, --help               Print help
+
+</summary>
+
 ```bash
 # Build (requires Rust 1.75+)
 cargo build --release
@@ -31,11 +49,13 @@ cargo build --release
 ./target/release/hash-pattern-miner Python --csv matches.csv
 ```
 
-Matches print to stdout with the pattern highlighted
+Matches print to stdout with the pattern highlighted.
 
 Multithreaded with [rayon](https://github.com/rayon-rs/rayon), SHA-NI accelerated via [sha2](https://github.com/RustCrypto/hashes), zero allocations in the hot loop. Typical throughput: **200–600 MH/s** on a modern CPU.
 
 ---
+
+
 
 
 ## A simple demonstration of the idea, searching for "GitHub" inside the base64-encoded sha256 hash:
@@ -116,7 +136,7 @@ Here is some research i have done with "GitHub"
 | 12,413,501,635 | `VTP9jGitHub0OtVdPvrki1rv7I1mmewb2fHlKl0y9j0=` |
 | 12,560,796,672 | `T+rKxN/uP8utF+CAg1c6SDODggMnHYCIwvnGitHubUk=` |
 
-The gaps between consecutive matches varied from ~35M to ~4.65B, but the practical average of the 8 inter-match gaps of 1.52 billion is close to the theoretical value of 1.76 billion...
+The gaps between consecutive matches varied from ~35M to ~4.65B, but the practical average of the 8 inter-match gaps — 1.52 billion — is close to the theoretical 1.76 billion...
 
 ---
 
