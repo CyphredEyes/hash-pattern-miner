@@ -17,7 +17,7 @@ A brute-force hash pattern searcher for finding user-defined sequences in hash o
 
 ## Quick start
 
-<details><summary> USAGE
+<details><summary> "USAGE
 
 Usage: hash-pattern-miner [OPTIONS] <PATTERN>
 
@@ -32,7 +32,7 @@ Options:
       --csv <FILE>         Append matches to this CSV file (input,raw_hash,encoded_hash)
       --no-color           Disable ANSI colors in match output
   -h, --help               Print help
-
+"
 </summary></details>
 
 ```bash
