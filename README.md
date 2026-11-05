@@ -60,7 +60,7 @@ Multithreaded with [rayon](https://github.com/rayon-rs/rayon), SHA-NI accelerate
 
 
 ## A simple demonstration of the idea, searching for "GitHub" inside the base64-encoded sha256 hash:
-
+In python:
 ```python
 import hashlib, base64
 
